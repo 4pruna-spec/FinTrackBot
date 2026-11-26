@@ -3,11 +3,14 @@ from database.db import (
     get_monthly_expenses
 )
 
+from database.goals import get_monthly_savings
 from keyboards.categories import EXPENSE_CATEGORIES
 
 
 def calculate_budget(user_id):
     income, expense = get_monthly_statistics(user_id)
+
+    savings = get_monthly_savings(user_id)
 
     needs_limit = income * 65 // 100
     personal_limit = income * 15 // 100
@@ -37,12 +40,15 @@ def calculate_budget(user_id):
     uncategorized = 0
 
     for category, amount in get_monthly_expenses(user_id):
+
         group = EXPENSE_CATEGORIES.get(category)
 
         if group in budget:
             budget[group]["spent"] += amount
         else:
             uncategorized += amount
+
+    budget["goals"]["spent"] += savings
 
     for group in budget.values():
         group["remaining"] = (
@@ -52,7 +58,8 @@ def calculate_budget(user_id):
     return {
         "income": income,
         "expense": expense,
-        "remaining": income - expense,
+        "savings": savings,
+        "remaining": income - expense - savings,
         "uncategorized": uncategorized,
         "groups": budget
     }
