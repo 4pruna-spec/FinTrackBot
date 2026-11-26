@@ -44,3 +44,13 @@ def get_balance(user_id):
         """, (user_id,)).fetchone()
 
     return result[0]
+    def get_transactions(user_id, limit=10):
+    with sqlite3.connect(DB_NAME) as conn:
+        return conn.execute("""
+            SELECT type, amount, category,
+                   description, created_at
+            FROM transactions
+            WHERE user_id = ?
+            ORDER BY id DESC
+            LIMIT ?
+        """, (user_id, limit)).fetchall()
