@@ -5,8 +5,11 @@ import os
 from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart
 from aiogram.types import Message
+from aiogram.fsm.context import FSMContext
 
 from keyboards.menus import main_menu
+from database.db import init_db
+from handlers.transactions import router
 
 logging.basicConfig(level=logging.INFO)
 
@@ -16,7 +19,9 @@ dp = Dispatcher()
 
 
 @dp.message(CommandStart())
-async def start_handler(message: Message):
+async def start_handler(message: Message, state: FSMContext):
+    await state.clear()
+
     await message.answer(
         "👋 Вітаю у FinTrack!\n\n"
         "💰 Твій особистий фінансовий помічник.\n\n"
@@ -29,7 +34,12 @@ async def main():
     if not TOKEN:
         raise ValueError("Не знайдено BOT_TOKEN!")
 
+    init_db()
+
+    dp.include_router(router)
+
     bot = Bot(token=TOKEN)
+
     await dp.start_polling(bot)
 
 
