@@ -75,3 +75,14 @@ def get_monthly_statistics(user_id):
             AND strftime('%Y-%m', created_at)
                 = strftime('%Y-%m', 'now')
         """, (user_id,)).fetchone()
+        def get_monthly_expenses(user_id):
+    with sqlite3.connect(DB_NAME) as conn:
+        return conn.execute("""
+            SELECT category, SUM(amount)
+            FROM transactions
+            WHERE user_id = ?
+            AND type = 'expense'
+            AND strftime('%Y-%m', created_at)
+                = strftime('%Y-%m', 'now')
+            GROUP BY category
+        """, (user_id,)).fetchall()
