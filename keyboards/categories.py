@@ -1,5 +1,6 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
+
 INCOME_CATEGORIES = [
     "💼 Зарплата",
     "💵 Аванс",
@@ -8,6 +9,7 @@ INCOME_CATEGORIES = [
     "🎁 Подарунок",
     "💰 Інший дохід"
 ]
+
 
 EXPENSE_CATEGORIES = {
     "🛒 Продукти": "needs",
@@ -33,27 +35,39 @@ EXPENSE_CATEGORIES = {
 }
 
 
+HIDDEN_EXPENSE_CATEGORIES = {
+    "💳 Погашення боргів",
+    "🛡️ Фінансова подушка",
+    "🎯 Накопичення"
+}
+
+
 def create_keyboard(categories):
     buttons = [
         KeyboardButton(text=category)
         for category in categories
     ]
 
-    rows = [
+    keyboard = [
         buttons[i:i + 2]
         for i in range(0, len(buttons), 2)
     ]
 
-    rows.append([
+    keyboard.append([
         KeyboardButton(text="❌ Скасувати")
     ])
 
     return ReplyKeyboardMarkup(
-        keyboard=rows,
+        keyboard=keyboard,
         resize_keyboard=True
     )
 
 
 income_keyboard = create_keyboard(INCOME_CATEGORIES)
 
-expense_keyboard = create_keyboard(EXPENSE_CATEGORIES)
+
+expense_keyboard = create_keyboard([
+    category
+    for category in EXPENSE_CATEGORIES
+    if category not in HIDDEN_EXPENSE_CATEGORIES
+])
