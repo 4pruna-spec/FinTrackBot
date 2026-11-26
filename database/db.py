@@ -54,3 +54,20 @@ def get_balance(user_id):
             ORDER BY id DESC
             LIMIT ?
         """, (user_id, limit)).fetchall()
+        def get_monthly_statistics(user_id):
+    with sqlite3.connect(DB_NAME) as conn:
+        return conn.execute("""
+            SELECT
+                COALESCE(SUM(
+                    CASE WHEN type = 'income'
+                    THEN amount ELSE 0 END
+                ), 0),
+                COALESCE(SUM(
+                    CASE WHEN type = 'expense'
+                    THEN amount ELSE 0 END
+                ), 0)
+            FROM transactions
+            WHERE user_id = ?
+            AND strftime('%Y-%m', created_at)
+                = strftime('%Y-%m', 'now')
+        """, (user_id,)).fetchone()
