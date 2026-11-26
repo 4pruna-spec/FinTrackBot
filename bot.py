@@ -9,7 +9,10 @@ from aiogram.fsm.context import FSMContext
 
 from keyboards.menus import main_menu
 from database.db import init_db
-from handlers.transactions import router
+
+from handlers.transactions import router as transactions_router
+from handlers.history import router as history_router
+from handlers.statistics import router as statistics_router
 
 logging.basicConfig(level=logging.INFO)
 
@@ -36,7 +39,9 @@ async def main():
 
     init_db()
 
-    dp.include_router(router)
+    dp.include_router(history_router)
+    dp.include_router(statistics_router)
+    dp.include_router(transactions_router)
 
     bot = Bot(token=TOKEN)
 
